@@ -11,16 +11,11 @@ import {
 } from "@mui/material";
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import { useSubscription } from "@apollo/client";
+import { GET_SONGS } from "../graphql/subscriptions";
 
 function SongList() {
-  let loading = false;
-
-  const song = {
-    title: "LUNE",
-    artist: "MOON",
-    thumbnail:
-      "https://images.unsplash.com/photo-1503455637927-730bce8583c0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8dGh1bWJuYWlsfGVufDB8fDB8fA%3D%3D&",
-  };
+  const { data, loading, error } = useSubscription(GET_SONGS);
 
   if (loading) {
     return (
@@ -37,10 +32,12 @@ function SongList() {
     );
   }
 
+  if (error) return <div>Error fetching songs</div>;
+
   return (
     <div>
-      {Array.from({ length: 10 }, () => song).map((song, i) => (
-        <Song key={i} song={song} />
+      {data.songs.map((song) => (
+        <Song key={song.id} song={song} />
       ))}
     </div>
   );
